@@ -13,6 +13,7 @@ class Miner {
         val block = Block(head.index + 1, System.currentTimeMillis(), 0, listOf(), headHash)
         do {
             ++block.proof
+            block.timestamp = System.currentTimeMillis()
             val hash = hashBlock(block)
         } while (!hash.startsWith("000"))
         return block
