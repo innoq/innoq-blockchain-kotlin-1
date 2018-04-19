@@ -27,6 +27,7 @@ dependencies {
     compile "io.ktor:ktor-gson:$ktor_version"
 
     testCompile("org.junit.jupiter:junit-jupiter-api:5.2.0-M1")
+    testCompile("io.ktor:ktor-server-test-host:$ktor_version")
     testRuntime("org.junit.jupiter:junit-jupiter-engine:5.2.0-M1")
 }
 

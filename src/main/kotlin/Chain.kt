@@ -13,7 +13,7 @@ data class Block(
 )
 
 data class Chain(
-        val blocks: List<Block>
+        val blocks: MutableList<Block>
 ) {
-    val blockHeight get() = blocks.size
+    val blockHeight = blocks.size.toLong()
 }

@@ -1,4 +1,4 @@
 data class Node(
         val nodeId: String,
-        val currendBlockHeight: Long
+        val currentBlockHeight: Long
 )

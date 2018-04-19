@@ -12,10 +12,10 @@ internal class MinerTest {
         val genesisBlock = Gson().fromJson<Block>(genesisBlockString, Block::class.java)
 
         // when
-        val block = Miner.mine(genesisBlock, 324345345)
+        val miningResponse = Miner.mine(genesisBlock, 324345345)
 
         // then
-        assertEquals("""00096CB02B4D30119EB874FB79AC77F4DEDD76D5965A6ACBEB2ACBF0C2DE5260""", Miner.hashBlock(block))
+        assertEquals("""00096CB02B4D30119EB874FB79AC77F4DEDD76D5965A6ACBEB2ACBF0C2DE5260""", Miner.hashBlock(miningResponse.block))
     }
 
     @Test
@@ -25,9 +25,9 @@ internal class MinerTest {
         val genesisBlock = Gson().fromJson<Block>(genesisBlockString, Block::class.java)
 
         // when
-        val block = Miner.mine(genesisBlock)
+        val miningResponse = Miner.mine(genesisBlock)
 
         // then
-        assertTrue(Miner.hashBlock(block).startsWith("000"))
+        assertTrue(Miner.hashBlock(miningResponse.block).startsWith("000"))
     }
 }
