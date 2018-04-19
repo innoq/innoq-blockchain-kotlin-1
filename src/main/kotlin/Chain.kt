@@ -12,10 +12,8 @@ data class Block(
         val previousBlockHash: String
 )
 
-data class Chain (
-    val blocks: List<Block>
+data class Chain(
+        val blocks: List<Block>
 ) {
-    fun blockHeight(): Int {
-        return blocks.size
-    }
+    val blockHeight get() = blocks.size
 }
