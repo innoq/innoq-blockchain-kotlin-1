@@ -3,7 +3,7 @@ import java.nio.charset.StandardCharsets
 import java.security.MessageDigest
 
 class Miner {
-    val digest = MessageDigest.getInstance("SHA-256")
+    private val digest = MessageDigest.getInstance("SHA-256")!!
     private fun hashBlock(block: Block): String {
         return digest.digest(Gson().toJson(block).toByteArray(StandardCharsets.UTF_8)).toHex()
     }
