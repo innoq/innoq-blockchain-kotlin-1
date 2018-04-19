@@ -7,7 +7,7 @@ data class Transaction(
 data class Block(
         val index: Long,
         val timestamp: Long,
-        val proof: Long,
+        var proof: Long,
         val transactions: List<Transaction>,
         val previousBlockHash: String
 )
