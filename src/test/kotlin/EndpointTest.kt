@@ -30,7 +30,7 @@ class EndpointTest {
         }) {
             assertEquals(HttpStatusCode.OK, response.status())
 
-            assertEquals("""{"blockHeight":${chain.blockHeight},"blocks":[$genesisBlockString]}""", response.content)
+            assertEquals("""{"blockHeight":${Chain.size()},"blocks":[$genesisBlockString]}""", response.content)
         }
 
     }

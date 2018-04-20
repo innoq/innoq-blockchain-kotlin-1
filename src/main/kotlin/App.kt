@@ -24,12 +24,7 @@ val chain: Chain = Chain(mutableListOf(genesisBlock))
 
 val uuid = UUID.randomUUID().toString()
 
-val digest = MessageDigest.getInstance("SHA-256")!!
-
 val neighbors = mutableListOf<Node>()
-
-
-data class MiningResponse(val message: String, val block: Block)
 
 
 fun Application.blockChain() {
@@ -42,7 +37,7 @@ fun Application.blockChain() {
 
     routing {
         get("/") {
-            call.respond(Node(uuid, chain.blockHeight, neighbors))
+            call.respond(Node(uuid, Chain.size(), neighbors))
         }
         get("/blocks") {
             call.respond(chain)
@@ -77,6 +72,14 @@ data class TxResponse(val id: String,
                       val timestamp: Long ,
                       val payload: String,
                       val confirmed: Boolean)
+
+data class ChainResponse(
+        val blocks: List<Block>
+) {
+    val blockHeight = blocks.size.toLong()
+}
+
+data class MiningResponse(val message: String, val block: Block)
 
 fun main(args: Array<String>) {
     findNeighbors()
