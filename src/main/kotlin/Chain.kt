@@ -23,6 +23,7 @@ object Chain {
         assert(block.hash().startsWith(HASH_PREFIX), {"block's hash doesn't start with " + HASH_PREFIX})
 
         blocks.add(block)
+        Events.add(block)
     }
 
     fun containsTransaction(transactionId: String) = blocks.stream()

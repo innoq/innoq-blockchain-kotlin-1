@@ -15,12 +15,12 @@ import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
 import java.security.MessageDigest
 import java.util.*
+import java.util.concurrent.atomic.AtomicLong
 
 
 val uuid = UUID.randomUUID().toString()
 
 val neighbors = mutableListOf<Node>()
-
 
 fun Application.blockChain() {
     install(ContentNegotiation) {
@@ -59,6 +59,10 @@ fun Application.blockChain() {
             else
                 call.respond(TxResponse(tx.id, tx.timestamp, tx.payload, false))
 
+        }
+
+        get("/events") {
+            call.respond(Events.get())
         }
     }
 }

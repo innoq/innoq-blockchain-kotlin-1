@@ -12,6 +12,7 @@ object TransactionPool {
     @Synchronized fun add(tx: Transaction) {
         pool.add(tx)
         map.put(tx.id, tx)
+        Events.add(tx)
     }
     
     fun get(id: String) = map.get(id)

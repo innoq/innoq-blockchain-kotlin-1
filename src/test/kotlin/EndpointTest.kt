@@ -1,4 +1,5 @@
 import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import io.ktor.application.Application
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
@@ -7,7 +8,9 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.server.testing.handleRequest
 import io.ktor.server.testing.withTestApplication
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
+import java.io.StringReader
 
 internal class EndpointTest : BaseTest() {
 
@@ -70,6 +73,22 @@ internal class EndpointTest : BaseTest() {
             assertEquals(HttpStatusCode.OK, response.status())
             val transaction = Gson().fromJson(response.content, Transaction::class.java)!!
             assertEquals("test payload", transaction.payload)
+        }
+    }
+
+
+    @Test
+    fun testGetEvents() = withTestApplication(Application::blockChain) {
+
+        TransactionPool.add(Transaction(payload = "test payload"))
+        Chain.add(Miner.mine(Chain.head()).block)
+
+        with(handleRequest(HttpMethod.Get, "/events") {
+            addHeader(HttpHeaders.Accept, ContentType.Application.Json.toString())
+        }) {
+            assertEquals(HttpStatusCode.OK, response.status())
+            assertTrue(response.content?.contains("new_block") ?: false)
+            assertTrue(response.content?.contains("new_transaction") ?: false)
         }
     }
 
