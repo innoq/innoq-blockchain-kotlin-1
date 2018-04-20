@@ -18,7 +18,7 @@ internal class EndpointTest : BaseTest() {
         }) {
             assertEquals(HttpStatusCode.OK, response.status())
 
-            assertEquals("""{"nodeId":"$uuid","currentBlockHeight":1}""", response.content)
+            assertEquals("""{"nodeId":"$uuid","currentBlockHeight":1,"neighbors":[]}""", response.content)
         }
 
     }
