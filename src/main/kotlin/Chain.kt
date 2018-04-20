@@ -1,11 +1,6 @@
 import com.google.gson.Gson
 import java.nio.charset.StandardCharsets
 
-data class Transaction(
-        val id: String,
-        val timestamp: Long,
-        val payload: String
-)
 
 data class Block(
         val index: Long,

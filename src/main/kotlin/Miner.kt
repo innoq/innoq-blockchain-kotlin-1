@@ -1,14 +1,14 @@
 object Miner {
 
     fun mine(head: Block): MiningResponse {
-        return mine(head, System.currentTimeMillis())
+        return mine(head, System.currentTimeMillis(), TransactionPool.get())
     }
 
-    fun mine(head: Block, timestamp: Long): MiningResponse {
+    fun mine(head: Block, timestamp: Long, transactions: List<Transaction>): MiningResponse {
         var hashes : Long =0
         val start = System.currentTimeMillis()
         val headHash = head.hash()
-        val block = Block(head.index + 1, timestamp, 0, listOf(), headHash)
+        val block = Block(head.index + 1, timestamp, 0, transactions, headHash)
         do {
             ++block.proof
             val hash = block.hash()
