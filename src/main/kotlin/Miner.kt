@@ -13,7 +13,7 @@ object Miner {
             val block = Block(head.index + 1, timestamp, proof++, transactions, headHash)
             val hash = block.hash()
             hashes++
-            if (hash.startsWith("000")) {
+            if (hash.startsWith(HASH_PREFIX)) {
                 val stop = System.currentTimeMillis()
                 val seconds = (stop.toDouble() - start.toDouble()) / 1000.toDouble()
                 val hashesPerSecond = hashes / seconds

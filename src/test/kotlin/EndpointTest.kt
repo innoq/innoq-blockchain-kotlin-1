@@ -9,7 +9,7 @@ import io.ktor.server.testing.withTestApplication
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
-class EndpointTest {
+internal class EndpointTest : BaseTest() {
 
     @Test
     fun testGetNodeId() = withTestApplication(Application::blockChain) {
