@@ -15,7 +15,7 @@ internal class MinerTest {
         val miningResponse = Miner.mine(genesisBlock, 324345345)
 
         // then
-        assertEquals("""00096CB02B4D30119EB874FB79AC77F4DEDD76D5965A6ACBEB2ACBF0C2DE5260""", Miner.hashBlock(miningResponse.block))
+        assertEquals("""00096CB02B4D30119EB874FB79AC77F4DEDD76D5965A6ACBEB2ACBF0C2DE5260""", miningResponse.block.hash())
     }
 
     @Test
@@ -28,6 +28,6 @@ internal class MinerTest {
         val miningResponse = Miner.mine(genesisBlock)
 
         // then
-        assertTrue(Miner.hashBlock(miningResponse.block).startsWith("000"))
+        assertTrue(miningResponse.block.hash().startsWith("000"))
     }
 }
