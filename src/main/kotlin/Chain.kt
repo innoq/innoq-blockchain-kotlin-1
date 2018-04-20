@@ -6,6 +6,8 @@ val genesisBlockString = "{\"index\":1,\"timestamp\":0,\"proof\":1917336,\"trans
 val genesisBlock = Gson().fromJson<Block>(genesisBlockString, Block::class.java)
 
 
+var HASH_PREFIX = "000000"
+
 object Chain {
     private val blocks = mutableListOf<Block>(genesisBlock)
 
@@ -15,14 +17,21 @@ object Chain {
 
     fun head() = blocks.last()
 
-    fun add(block: Block) {
+    @Synchronized fun add(block: Block) {
         assert(block.index == head().index + 1, { "There exists already another block with the given index" })
         assert(block.previousBlockHash.equals(head().hash()), { "previousBlockHash is not correct" })
+        assert(block.hash().startsWith(HASH_PREFIX), {"block's hash doesn't start with " + HASH_PREFIX})
+
         blocks.add(block)
     }
 
     fun containsTransaction(transactionId: String) = blocks.stream()
             .flatMap { block -> block.transactions.stream() }
             .anyMatch {transaction -> transaction.id.equals(transactionId)}
+
+    @Synchronized fun clear() {
+        blocks.clear()
+        blocks.add(genesisBlock)
+    }
 
 }

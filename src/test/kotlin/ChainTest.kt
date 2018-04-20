@@ -1,9 +1,8 @@
-import com.google.gson.Gson
 import org.junit.jupiter.api.Test
 
 import org.junit.jupiter.api.Assertions.*
 
-internal class ChainTest {
+internal class ChainTest : BaseTest() {
 
     @Test
     fun `has transactions confirmed`() {

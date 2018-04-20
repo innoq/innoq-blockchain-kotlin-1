@@ -3,7 +3,7 @@ import org.junit.jupiter.api.Test
 
 import org.junit.jupiter.api.Assertions.*
 
-internal class MinerTest {
+internal class MinerTest : BaseTest() {
 
     @Test
     fun `should mine new block on genesis`() {
@@ -15,7 +15,7 @@ internal class MinerTest {
         val miningResponse = Miner.mine(genesisBlock, 324345345, listOf())
 
         // then
-        assertEquals("""00096CB02B4D30119EB874FB79AC77F4DEDD76D5965A6ACBEB2ACBF0C2DE5260""", miningResponse.block.hash())
+        assertEquals("""00B2CBCD749814572C35BA9A265420E9A86C97170C2BDE91513F2A0363FEDCEE""", miningResponse.block.hash())
     }
 
     @Test
@@ -28,6 +28,6 @@ internal class MinerTest {
         val miningResponse = Miner.mine(genesisBlock)
 
         // then
-        assertTrue(miningResponse.block.hash().startsWith("000"))
+        assertTrue(miningResponse.block.hash().startsWith(HASH_PREFIX))
     }
 }

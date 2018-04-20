@@ -9,12 +9,12 @@ data class Transaction(
 object TransactionPool {
     private val map = hashMapOf<String, Transaction>()
     private val pool: ArrayDeque<Transaction> = ArrayDeque()
-    fun add(tx: Transaction) {
+    @Synchronized fun add(tx: Transaction) {
         pool.add(tx)
         map.put(tx.id, tx)
     }
     
     fun get(id: String) = map.get(id)
-    
-    fun takeForMining() = pool.take(5)
+
+    @Synchronized fun takeForMining() = pool.take(5)
 }
