@@ -48,6 +48,8 @@ object Chain {
 
         blocks.clear()
         blocks.addAll(chain.blocks)
+
+        logger.info("Blockchain synchronized to height: ${chain.blockHeight}")
     }
 
 }

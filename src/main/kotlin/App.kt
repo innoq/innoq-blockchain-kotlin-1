@@ -13,6 +13,7 @@ import io.ktor.routing.routing
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
 import kotlinx.coroutines.experimental.async
+import org.slf4j.LoggerFactory
 import java.net.InetAddress
 import java.util.*
 import kotlin.concurrent.schedule
@@ -23,6 +24,9 @@ val uuid = UUID.randomUUID().toString()
 val neighbors = mutableListOf<Node>()
 
 val ipAddress = InetAddress.getLocalHost().toString().split("/")[1]
+
+
+val logger = LoggerFactory.getLogger("app")
 
 
 fun Application.blockChain() {
@@ -93,10 +97,14 @@ data class ChainResponse(
 data class MiningResponse(val message: String, val block: Block)
 
 fun main(args: Array<String>) {
-    findNeighbors()
+    // findNeighbors()
+    neighbors.add(Node("1", 1, mutableListOf(), "http://10.100.110.45:8333"))
+
+
     Timer("chain-updater", true).schedule(1000L, 2000L, {
         neighbors.forEach({ neighbour ->
             async {
+                logger.info("Checking blocks from ${neighbour.host}")
                 val chain = neighbour.getBlocks()
                 Chain.synchronize(chain!!)
             }
