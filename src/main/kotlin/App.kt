@@ -5,6 +5,7 @@ import io.ktor.application.install
 import io.ktor.features.CallLogging
 import io.ktor.features.ContentNegotiation
 import io.ktor.gson.gson
+import io.ktor.http.HttpStatusCode
 import io.ktor.request.receive
 import io.ktor.response.respond
 import io.ktor.routing.get
@@ -25,6 +26,8 @@ val uuid = UUID.randomUUID().toString()
 
 val digest = MessageDigest.getInstance("SHA-256")!!
 
+val neighbors = mutableListOf<Node>()
+
 
 data class MiningResponse(val message: String, val block: Block)
 
@@ -39,7 +42,7 @@ fun Application.blockChain() {
 
     routing {
         get("/") {
-            call.respond(Node(uuid, chain.blockHeight))
+            call.respond(Node(uuid, chain.blockHeight, neighbors))
         }
         get("/blocks") {
             call.respond(chain)
@@ -76,6 +79,7 @@ data class TxResponse(val id: String,
                       val confirmed: Boolean)
 
 fun main(args: Array<String>) {
+    findNeighbors()
     val server = embeddedServer(Netty, port = 8333, module = Application::blockChain)
     server.start(wait = true)
 }
