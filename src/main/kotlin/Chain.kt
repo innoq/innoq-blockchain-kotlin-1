@@ -1,22 +1,28 @@
 import com.google.gson.Gson
 import java.nio.charset.StandardCharsets
 
+val genesisBlockString = "{\"index\":1,\"timestamp\":0,\"proof\":1917336,\"transactions\":[{\"id\":\"b3c973e2-db05-4eb5-9668-3e81c7389a6d\",\"timestamp\":0,\"payload\":\"I am Heribert Innoq\"}],\"previousBlockHash\":\"0\"}"
 
-data class Block(
-        val index: Long,
-        val timestamp: Long,
-        val proof: Long,
-        val transactions: List<Transaction>,
-        val previousBlockHash: String
-)
+val genesisBlock = Gson().fromJson<Block>(genesisBlockString, Block::class.java)
 
-data class Chain(
-        val blocks: MutableList<Block>
-) {
-    val blockHeight = blocks.size.toLong()
+
+object Chain {
+    private val blocks = mutableListOf<Block>(genesisBlock)
+
+    fun getBlocks() = blocks.toList()
+
+    fun size() = blocks.size.toLong()
+
+    fun head() = blocks.last()
+
+    fun add(block: Block) {
+        assert(block.index == head().index + 1, { "There exists already another block with the given index" })
+        assert(block.previousBlockHash.equals(head().hash()), { "previousBlockHash is not correct" })
+        blocks.add(block)
+    }
+
+    fun containsTransaction(transactionId: String) = blocks.stream()
+            .flatMap { block -> block.transactions.stream() }
+            .anyMatch {transaction -> transaction.id.equals(transactionId)}
+
 }
-
-fun Block.hash(): String {
-    return digest.digest(Gson().toJson(this).toByteArray(StandardCharsets.UTF_8)).toHex()
-}
-

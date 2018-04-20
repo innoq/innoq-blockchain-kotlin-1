@@ -5,6 +5,7 @@ import io.ktor.application.install
 import io.ktor.features.CallLogging
 import io.ktor.features.ContentNegotiation
 import io.ktor.gson.gson
+import io.ktor.http.HttpStatusCode
 import io.ktor.request.receive
 import io.ktor.response.respond
 import io.ktor.routing.get
@@ -15,19 +16,8 @@ import io.ktor.server.netty.Netty
 import java.security.MessageDigest
 import java.util.*
 
-val genesisBlockString = "{\"index\":1,\"timestamp\":0,\"proof\":1917336,\"transactions\":[{\"id\":\"b3c973e2-db05-4eb5-9668-3e81c7389a6d\",\"timestamp\":0,\"payload\":\"I am Heribert Innoq\"}],\"previousBlockHash\":\"0\"}"
-
-val genesisBlock = Gson().fromJson<Block>(genesisBlockString, Block::class.java)
-
-val chain: Chain = Chain(mutableListOf(genesisBlock))
 
 val uuid = UUID.randomUUID().toString()
-
-val digest = MessageDigest.getInstance("SHA-256")!!
-
-
-data class MiningResponse(val message: String, val block: Block)
-
 
 fun Application.blockChain() {
     install(ContentNegotiation) {
@@ -39,15 +29,15 @@ fun Application.blockChain() {
 
     routing {
         get("/") {
-            call.respond(Node(uuid, chain.blockHeight))
+            call.respond(Node(uuid, Chain.size()))
         }
         get("/blocks") {
-            call.respond(chain)
+            call.respond(ChainResponse(Chain.getBlocks()))
         }
         get("/mine") {
 
-            val miningResponse = Miner.mine(chain.blocks.last())
-            chain.blocks.add(miningResponse.block)
+            val miningResponse = Miner.mine(Chain.head())
+            Chain.add(miningResponse.block)
             call.respond(miningResponse)
         }
 
@@ -64,16 +54,24 @@ fun Application.blockChain() {
             if (tx == null)
                 call.respond(HttpStatusCode.NotFound)
             else
-                call.respond(TxResponse(tx.id, tx.timestamp, tx.payload, false))
+                call.respond(TxResponse(tx.id, tx.timestamp, tx.payload, Chain.containsTransaction(id)))
 
         }
     }
 }
 
 data class TxResponse(val id: String,
-                      val timestamp: Long ,
+                      val timestamp: Long,
                       val payload: String,
                       val confirmed: Boolean)
+
+data class ChainResponse(
+        val blocks: List<Block>
+) {
+    val blockHeight = blocks.size.toLong()
+}
+
+data class MiningResponse(val message: String, val block: Block)
 
 fun main(args: Array<String>) {
     val server = embeddedServer(Netty, port = 8333, module = Application::blockChain)
