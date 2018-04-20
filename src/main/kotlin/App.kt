@@ -1,4 +1,3 @@
-import com.google.gson.Gson
 import io.ktor.application.Application
 import io.ktor.application.call
 import io.ktor.application.install
@@ -13,13 +12,15 @@ import io.ktor.routing.post
 import io.ktor.routing.routing
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
-import java.security.MessageDigest
+import java.net.InetAddress
 import java.util.*
 
 
 val uuid = UUID.randomUUID().toString()
 
 val neighbors = mutableListOf<Node>()
+
+val ipAddress= InetAddress.getLocalHost().toString().split("/")[1]
 
 
 fun Application.blockChain() {
@@ -32,7 +33,7 @@ fun Application.blockChain() {
 
     routing {
         get("/") {
-            call.respond(Node(uuid, Chain.size(), neighbors))
+            call.respond(Node(uuid, Chain.size(), neighbors,ipAddress))
         }
         get("/blocks") {
             call.respond(ChainResponse(Chain.getBlocks()))
@@ -60,6 +61,15 @@ fun Application.blockChain() {
                 call.respond(TxResponse(tx.id, tx.timestamp, tx.payload, false))
 
         }
+
+        post("/nodes/register") {
+            val requestNode = call.receive<Node>()
+            val node = Node(currentBlockHeight = requestNode.currentBlockHeight, host = requestNode.host, neighbors = mutableListOf(), nodeId=UUID.randomUUID().toString() )
+            neighbors.add(node)
+            call.respond(RegistrationResponseNode("New node added", node))
+        }
+
+
     }
 }
 
