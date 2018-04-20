@@ -7,6 +7,7 @@ import io.ktor.routing.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import com.google.gson.*
+import io.ktor.request.receive
 import java.security.MessageDigest
 import java.util.*
 
@@ -43,8 +44,19 @@ fun Application.blockChain(){
             chain.blocks.add(miningResponse.block)
             call.respond(miningResponse)
         }
+
+        post("/transactions") {
+            val txRequest = call.receive<TxRequest>()
+            println(txRequest)
+            val newTransaction = Transaction(payload = txRequest.payload)
+            TransactionPool.add(newTransaction)
+            call.respond(newTransaction)
+        }
     }
 }
+
+data class TxRequest(val payload: String)
+
 fun main(args: Array<String>) {
     val server = embeddedServer(Netty, port = 8089, module = Application::blockChain)
     server.start(wait = true)

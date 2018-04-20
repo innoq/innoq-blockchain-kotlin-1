@@ -10,11 +10,11 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Test
 
-class EndpointTest{
+class EndpointTest {
 
     @Test
     fun testGetNodeId() = withTestApplication(Application::blockChain) {
-        with(handleRequest(HttpMethod.Get, "/"){
+        with(handleRequest(HttpMethod.Get, "/") {
             addHeader(HttpHeaders.Accept, ContentType.Application.Json.toString())
         }) {
             assertEquals(HttpStatusCode.OK, response.status())
@@ -26,7 +26,7 @@ class EndpointTest{
 
     @Test
     fun testGetBlockChain() = withTestApplication(Application::blockChain) {
-        with(handleRequest(HttpMethod.Get, "/blocks"){
+        with(handleRequest(HttpMethod.Get, "/blocks") {
             addHeader(HttpHeaders.Accept, ContentType.Application.Json.toString())
         }) {
             assertEquals(HttpStatusCode.OK, response.status())
@@ -38,12 +38,26 @@ class EndpointTest{
 
     @Test
     fun testGetMining() = withTestApplication(Application::blockChain) {
-        with(handleRequest(HttpMethod.Get, "/mine"){
+        with(handleRequest(HttpMethod.Get, "/mine") {
             addHeader(HttpHeaders.Accept, ContentType.Application.Json.toString())
         }) {
             assertEquals(HttpStatusCode.OK, response.status())
             val miningResponse = Gson().fromJson(response.content, MiningResponse::class.java)!!
-            assertEquals(2,miningResponse.block.index)
+            assertEquals(2, miningResponse.block.index)
+        }
+
+    }
+
+    @Test
+    fun testPostTransaction() = withTestApplication(Application::blockChain) {
+        with(handleRequest(HttpMethod.Post, "/transactions") {
+            addHeader(HttpHeaders.Accept, ContentType.Application.Json.toString())
+            addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+            body = """{"payload": "test payload"}"""
+        }) {
+            assertEquals(HttpStatusCode.OK, response.status())
+            val transaction = Gson().fromJson(response.content, Transaction::class.java)!!
+            assertEquals("test payload", transaction.payload)
         }
 
     }
