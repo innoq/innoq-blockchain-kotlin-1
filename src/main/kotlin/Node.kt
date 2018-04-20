@@ -3,13 +3,15 @@ import io.ktor.client.HttpClient
 import io.ktor.client.engine.apache.Apache
 import io.ktor.client.request.get
 import kotlinx.coroutines.experimental.async
+import java.util.*
 import java.util.stream.Collectors
 import java.util.stream.IntStream
 
 data class Node(
         val nodeId: String,
         val currentBlockHeight: Long,
-        val neighbors: MutableList<Node>
+        val neighbors: MutableList<Node>,
+        val host :String
 )
 
 
@@ -30,5 +32,7 @@ fun findNeighbor(ipSub : Int){
     }
 
 }
+
+data class RegistrationResponseNode(val message: String, val node: Node)
 
 

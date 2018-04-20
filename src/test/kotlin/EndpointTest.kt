@@ -16,12 +16,13 @@ internal class EndpointTest : BaseTest() {
 
     @Test
     fun testGetNodeId() = withTestApplication(Application::blockChain) {
+        neighbors.clear()
         with(handleRequest(HttpMethod.Get, "/") {
             addHeader(HttpHeaders.Accept, ContentType.Application.Json.toString())
         }) {
             assertEquals(HttpStatusCode.OK, response.status())
 
-            assertEquals("""{"nodeId":"$uuid","currentBlockHeight":1,"neighbors":[]}""", response.content)
+            assertEquals("""{"nodeId":"$uuid","currentBlockHeight":1,"neighbors":[],"host":"10.100.110.45"}""", response.content)
         }
 
     }
@@ -89,6 +90,19 @@ internal class EndpointTest : BaseTest() {
             assertEquals(HttpStatusCode.OK, response.status())
             assertTrue(response.content?.contains("new_block") ?: false)
             assertTrue(response.content?.contains("new_transaction") ?: false)
+        }
+    }
+
+    @Test
+    fun testPostNodeRegistration() = withTestApplication(Application::blockChain) {
+        with(handleRequest(HttpMethod.Post, "/nodes/register") {
+            addHeader(HttpHeaders.Accept, ContentType.Application.Json.toString())
+            addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+            body = """{"host": "10.100.110.25"}"""
+        }) {
+            assertEquals(HttpStatusCode.OK, response.status())
+            val node = Gson().fromJson(response.content, RegistrationResponseNode::class.java)!!
+            assertEquals("New node added", node.message)
         }
     }
 
