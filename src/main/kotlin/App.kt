@@ -1,4 +1,3 @@
-import com.google.gson.Gson
 import io.ktor.application.Application
 import io.ktor.application.call
 import io.ktor.application.install
@@ -13,7 +12,6 @@ import io.ktor.routing.post
 import io.ktor.routing.routing
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
-import java.security.MessageDigest
 import java.util.*
 
 
