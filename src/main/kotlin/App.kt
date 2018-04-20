@@ -19,7 +19,7 @@ val genesisBlockString = "{\"index\":1,\"timestamp\":0,\"proof\":1917336,\"trans
 
 val genesisBlock = Gson().fromJson<Block>(genesisBlockString, Block::class.java)
 
-val chain:Chain = Chain(mutableListOf(genesisBlock))
+val chain: Chain = Chain(mutableListOf(genesisBlock))
 
 val uuid = UUID.randomUUID().toString()
 
@@ -29,7 +29,7 @@ val digest = MessageDigest.getInstance("SHA-256")!!
 data class MiningResponse(val message: String, val block: Block)
 
 
-fun Application.blockChain(){
+fun Application.blockChain() {
     install(ContentNegotiation) {
         gson {
             //setPrettyPrinting()
@@ -52,16 +52,28 @@ fun Application.blockChain(){
         }
 
         post("/transactions") {
-            val txRequest = call.receive<TxRequest>()
-            println(txRequest)
-            val newTransaction = Transaction(payload = txRequest.payload)
-            TransactionPool.add(newTransaction)
-            call.respond(newTransaction)
+            val requestTransaction = call.receive<Transaction>()
+            val tx = Transaction(payload = requestTransaction.payload)
+            TransactionPool.add(tx)
+            call.respond(TxResponse(tx.id, tx.timestamp, tx.payload, false))
+        }
+
+        get("/transactions/{id}") {
+            val id = call.parameters["id"] ?: ""
+            val tx = TransactionPool.get(id)
+            if (tx == null)
+                call.respond(HttpStatusCode.NotFound)
+            else
+                call.respond(TxResponse(tx.id, tx.timestamp, tx.payload, false))
+
         }
     }
 }
 
-data class TxRequest(val payload: String)
+data class TxResponse(val id: String,
+                      val timestamp: Long ,
+                      val payload: String,
+                      val confirmed: Boolean)
 
 fun main(args: Array<String>) {
     val server = embeddedServer(Netty, port = 8333, module = Application::blockChain)

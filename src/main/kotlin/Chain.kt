@@ -4,8 +4,8 @@ import java.nio.charset.StandardCharsets
 
 data class Block(
         val index: Long,
-        var timestamp: Long,
-        var proof: Long,
+        val timestamp: Long,
+        val proof: Long,
         val transactions: List<Transaction>,
         val previousBlockHash: String
 )
