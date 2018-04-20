@@ -7,7 +7,6 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.server.testing.handleRequest
 import io.ktor.server.testing.withTestApplication
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Test
 
 class EndpointTest {
@@ -59,7 +58,19 @@ class EndpointTest {
             val transaction = Gson().fromJson(response.content, Transaction::class.java)!!
             assertEquals("test payload", transaction.payload)
         }
+    }
 
+    @Test
+    fun testGetTransaction() = withTestApplication(Application::blockChain) {
+        val tx = Transaction(payload = "test payload")
+        TransactionPool.add(tx)
+        with(handleRequest(HttpMethod.Get, "/transactions/" + tx.id) {
+            addHeader(HttpHeaders.Accept, ContentType.Application.Json.toString())
+        }) {
+            assertEquals(HttpStatusCode.OK, response.status())
+            val transaction = Gson().fromJson(response.content, Transaction::class.java)!!
+            assertEquals("test payload", transaction.payload)
+        }
     }
 
 }
