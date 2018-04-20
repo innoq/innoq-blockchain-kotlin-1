@@ -22,7 +22,7 @@ internal class EndpointTest : BaseTest() {
         }) {
             assertEquals(HttpStatusCode.OK, response.status())
 
-            assertEquals("""{"nodeId":"$uuid","currentBlockHeight":1,"neighbors":[],"host":"10.100.110.45"}""", response.content)
+            assertEquals("""{"nodeId":"$uuid","currentBlockHeight":1,"neighbors":[],"host":"$ipAddress"}""", response.content)
         }
 
     }
