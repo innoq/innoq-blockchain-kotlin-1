@@ -16,4 +16,21 @@ internal class ChainTest : BaseTest() {
     }
 
 
+    @Test
+    fun `synchronize with remote blockchain`() {
+
+        // our chain of size 2
+        Chain.add(Miner.mine(genesisBlock).block)
+
+        // remote chain of size 4
+        val remoteChain = mutableListOf<Block>(genesisBlock)
+        for (i in 1..3)
+            remoteChain.add(Miner.mine(remoteChain.last()).block)
+
+
+        Chain.synchronize(ChainResponse(remoteChain))
+
+        assertEquals(4, Chain.size())
+    }
+
 }

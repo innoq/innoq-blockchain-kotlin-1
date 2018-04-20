@@ -12,15 +12,17 @@ import io.ktor.routing.post
 import io.ktor.routing.routing
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
+import kotlinx.coroutines.experimental.async
 import java.net.InetAddress
 import java.util.*
+import kotlin.concurrent.schedule
 
 
 val uuid = UUID.randomUUID().toString()
 
 val neighbors = mutableListOf<Node>()
 
-val ipAddress= InetAddress.getLocalHost().toString().split("/")[1]
+val ipAddress = InetAddress.getLocalHost().toString().split("/")[1]
 
 
 fun Application.blockChain() {
@@ -33,7 +35,7 @@ fun Application.blockChain() {
 
     routing {
         get("/") {
-            call.respond(Node(uuid, Chain.size(), neighbors,ipAddress))
+            call.respond(Node(uuid, Chain.size(), neighbors, ipAddress))
         }
         get("/blocks") {
             call.respond(ChainResponse(Chain.getBlocks()))
@@ -68,7 +70,7 @@ fun Application.blockChain() {
 
         post("/nodes/register") {
             val requestNode = call.receive<Node>()
-            val node = Node(currentBlockHeight = requestNode.currentBlockHeight, host = requestNode.host, neighbors = mutableListOf(), nodeId=UUID.randomUUID().toString() )
+            val node = Node(currentBlockHeight = requestNode.currentBlockHeight, host = requestNode.host, neighbors = mutableListOf(), nodeId = UUID.randomUUID().toString())
             neighbors.add(node)
             call.respond(RegistrationResponseNode("New node added", node))
         }
@@ -78,7 +80,7 @@ fun Application.blockChain() {
 }
 
 data class TxResponse(val id: String,
-                      val timestamp: Long ,
+                      val timestamp: Long,
                       val payload: String,
                       val confirmed: Boolean)
 
@@ -92,6 +94,16 @@ data class MiningResponse(val message: String, val block: Block)
 
 fun main(args: Array<String>) {
     findNeighbors()
+    Timer("chain-updater", true).schedule(1000L, 2000L, {
+        neighbors.forEach({ neighbour ->
+            async {
+                val chain = neighbour.getBlocks()
+                Chain.synchronize(chain!!)
+            }
+        })
+    })
+
     val server = embeddedServer(Netty, port = 8333, module = Application::blockChain)
     server.start(wait = true)
+
 }

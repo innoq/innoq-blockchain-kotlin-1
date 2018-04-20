@@ -1,5 +1,4 @@
 import com.google.gson.Gson
-import java.nio.charset.StandardCharsets
 
 val genesisBlockString = "{\"index\":1,\"timestamp\":0,\"proof\":1917336,\"transactions\":[{\"id\":\"b3c973e2-db05-4eb5-9668-3e81c7389a6d\",\"timestamp\":0,\"payload\":\"I am Heribert Innoq\"}],\"previousBlockHash\":\"0\"}"
 
@@ -33,6 +32,22 @@ object Chain {
     @Synchronized fun clear() {
         blocks.clear()
         blocks.add(genesisBlock)
+    }
+
+    @Synchronized fun synchronize(chain: ChainResponse) {
+        if (chain.blockHeight <= size() + 1)
+            return
+
+        assert(chain.blocks[0].equals(genesisBlock))
+
+        var lastHash = "0"
+        for (block in chain.blocks) {
+            assert(block.previousBlockHash.equals(lastHash))
+            lastHash = block.hash()
+        }
+
+        blocks.clear()
+        blocks.addAll(chain.blocks)
     }
 
 }

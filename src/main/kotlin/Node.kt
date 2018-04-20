@@ -14,6 +14,7 @@ data class Node(
         val host :String
 )
 
+suspend fun Node.getBlocks() = Gson().fromJson(client.get<String>("""$host/blocks"""), ChainResponse::class.java)
 
 
 val client = HttpClient(Apache)
